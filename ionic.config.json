@@ -1,0 +1,7 @@
+{
+  "name": "Eva3app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
