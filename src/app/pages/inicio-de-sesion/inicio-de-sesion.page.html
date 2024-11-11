@@ -1,0 +1,23 @@
+<app-header></app-header>
+<ion-content>
+  <div class="ion-padding">
+    <div class="ion-text-center ion-padding">
+      <form (ngSubmit)="onSubmit()" class="auth-form">
+        <ion-item>
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+        </ion-item>
+        <ion-button type="submit" expand="block" class="ion-margin-top">
+          Iniciar Sesión
+        </ion-button>
+        <ion-button expand="block" fill="clear" (click)="irARegistro()" class="ion-margin-top">
+          ¿No tienes cuenta? Regístrate
+        </ion-button>
+      </form>
+    </div>
+  </div>
+</ion-content>
