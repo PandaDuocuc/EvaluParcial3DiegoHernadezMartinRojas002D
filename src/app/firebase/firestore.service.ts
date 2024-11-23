@@ -75,11 +75,24 @@ export class FirestoreService {
     return this.firestore.collection('tareas').doc(tareaId).update({ estado });
   }
 
+  getTareasDisponibles(): Observable<Tarea[]> {
+    return this.firestore.collection('tareas', ref =>
+      ref.where('estado', '==', 'pendiente')
+         .orderBy('fecha_creacion', 'desc')
+    ).valueChanges({ idField: 'id' }) as Observable<Tarea[]>;
+  }
+
   async tomarTarea(tareaId: string, user: any) {
     return this.firestore.collection('tareas').doc(tareaId).update({
       estado: 'en_progreso',
       asignado_a: user.uid,
       nombre_trabajador: user.displayName
+    });
+  }
+
+  async completarTarea(tareaId: string) {
+    return this.firestore.collection('tareas').doc(tareaId).update({
+      estado: 'completada'
     });
   }
 }

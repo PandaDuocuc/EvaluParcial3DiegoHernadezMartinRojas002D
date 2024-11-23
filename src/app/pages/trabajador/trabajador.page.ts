@@ -9,31 +9,38 @@ import { Tarea } from '../../firebase/firestore.service';
   styleUrls: ['./trabajador.page.scss'],
 })
 export class TrabajadorPage implements OnInit {
-  tareas: Tarea[] = [];
+  tareas: (Tarea & { expanded?: boolean })[] = [];
+  currentUserId: string = '';
 
   constructor(
     private firestoreService: FirestoreService,
     private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    this.cargarTareas();
+  async ngOnInit() {
+    const user = await this.authService.getCurrentUser();
+    if (user) {
+      this.currentUserId = user.uid;
+      this.cargarTareas();
+    }
   }
 
-  async cargarTareas() {
+  cargarTareas() {
     this.firestoreService.getTareasPendientes().subscribe(tareas => {
-      this.tareas = tareas;
+      this.tareas = tareas.map(tarea => ({ ...tarea, expanded: false }));
     });
   }
 
-  async tomarTarea(tarea: Tarea) {
+  async aceptarTarea(tarea: Tarea) {
     const user = await this.authService.getCurrentUser();
     if (user) {
       await this.firestoreService.tomarTarea(tarea.id!, user);
     }
   }
 
-  logout() {
-    this.authService.logout();
+  async completarTarea(tarea: Tarea) {
+    if (tarea.id) {
+      await this.firestoreService.actualizarEstadoTarea(tarea.id, 'completada');
+    }
   }
 }

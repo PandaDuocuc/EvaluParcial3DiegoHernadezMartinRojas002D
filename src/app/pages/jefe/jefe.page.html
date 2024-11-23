@@ -1,11 +1,23 @@
 <app-header [titulo]="'Panel de Jefe'"></app-header>
 <ion-content>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="abrirModalCrearTarea()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <ion-list>
     <ion-item *ngFor="let tarea of tareas">
       <ion-label>
         <h2>{{tarea.titulo}}</h2>
         <p>{{tarea.descripcion}}</p>
-        <p>Estado: {{tarea.estado}}</p>
+        <p [ngClass]="{
+          'estado-pendiente': tarea.estado === 'pendiente',
+          'estado-en-progreso': tarea.estado === 'en_progreso',
+          'estado-completada': tarea.estado === 'completada'
+        }">
+          Estado: {{tarea.estado}}
+        </p>
         <p *ngIf="tarea.nombre_trabajador">Tomada por: {{tarea.nombre_trabajador}}</p>
       </ion-label>
     </ion-item>
