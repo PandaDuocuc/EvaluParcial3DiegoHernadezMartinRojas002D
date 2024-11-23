@@ -1,38 +1,16 @@
-<app-header [titulo]="'Panel de Trabajador'"></app-header>
+<app-header [titulo]="titulo"></app-header>
+
 <ion-content>
-  <ion-list>
-    <ion-card *ngFor="let tarea of tareas">
-      <ion-card-header (click)="tarea.expanded = !tarea.expanded">
-        <ion-card-title>{{tarea.titulo}}</ion-card-title>
-        <ion-card-subtitle>Estado: {{tarea.estado}}</ion-card-subtitle>
-      </ion-card-header>
-
-      <ion-card-content *ngIf="tarea.expanded">
-        <p>{{tarea.descripcion}}</p>
-
-        <div class="botones-container">
-          <ion-button
-            color="primary"
-            *ngIf="tarea.estado === 'pendiente'"
-            (click)="aceptarTarea(tarea)">
-            Aceptar
-          </ion-button>
-
-          <ion-button
-            color="success"
-            *ngIf="tarea.estado === 'en_progreso' && tarea.asignado_a === currentUserId"
-            (click)="completarTarea(tarea)">
-            Terminada
-          </ion-button>
-
-          <ion-button
-            color="medium"
-            (click)="tarea.expanded = false">
-            Salir
-          </ion-button>
-        </div>
-      </ion-card-content>
-    </ion-card>
+  <ion-list *ngIf="!loading && !error">
+    <ion-item *ngFor="let tarea of tareas">
+      <ion-label>
+        <h2>{{ tarea.titulo }}</h2>
+        <p>{{ tarea.descripcion }}</p>
+        <p>Estado: {{ tarea.estado }}</p>
+      </ion-label>
+    </ion-item>
   </ion-list>
+
+  <ion-spinner *ngIf="loading"></ion-spinner>
+  <ion-text color="danger" *ngIf="error">{{ error }}</ion-text>
 </ion-content>
-<app-footer></app-footer>

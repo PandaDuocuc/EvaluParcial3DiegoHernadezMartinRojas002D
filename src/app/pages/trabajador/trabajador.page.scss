@@ -1,3 +1,18 @@
+.estado-pendiente {
+  color: orange;
+  font-weight: bold;
+}
+
+.estado-en-progreso {
+  color: blue;
+  font-weight: bold;
+}
+
+.estado-completada {
+  color: green;
+  font-weight: bold;
+}
+
 .botones-container {
   display: flex;
   gap: 10px;
@@ -11,4 +26,8 @@ ion-card {
 
 ion-card-header {
   cursor: pointer;
+}
+
+ion-card-subtitle {
+  margin-top: 8px;
 }

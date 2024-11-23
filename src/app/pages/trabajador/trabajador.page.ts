@@ -1,46 +1,84 @@
-import { Component, OnInit } from '@angular/core';
-import { FirestoreService } from '../../firebase/firestore.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../firebase/auth.service';
-import { Tarea } from '../../firebase/firestore.service';
+import { FirestoreService, Tarea } from '../../firebase/firestore.service';
+import { Subscription } from 'rxjs';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-trabajador',
   templateUrl: './trabajador.page.html',
   styleUrls: ['./trabajador.page.scss'],
 })
-export class TrabajadorPage implements OnInit {
-  tareas: (Tarea & { expanded?: boolean })[] = [];
-  currentUserId: string = '';
+export class TrabajadorPage implements OnInit, OnDestroy {
+  currentUser: firebase.User | null = null;
+  tareas: Tarea[] = [];
+  loading: boolean = true;
+  error: string | null = null;
+  titulo: string = 'Panel de Trabajador';
+  private authSubscription?: Subscription;
+  private tareasSubscription?: Subscription;
 
   constructor(
-    private firestoreService: FirestoreService,
-    private authService: AuthService
+    private authService: AuthService,
+    private firestoreService: FirestoreService
   ) {}
 
-  async ngOnInit() {
-    const user = await this.authService.getCurrentUser();
-    if (user) {
-      this.currentUserId = user.uid;
-      this.cargarTareas();
-    }
-  }
-
-  cargarTareas() {
-    this.firestoreService.getTareasPendientes().subscribe(tareas => {
-      this.tareas = tareas.map(tarea => ({ ...tarea, expanded: false }));
+  ngOnInit() {
+    this.loading = true;
+    this.authSubscription = this.authService.authState$.subscribe({
+      next: (user) => {
+        this.currentUser = user;
+        if (user) {
+          this.cargarTareas();
+        } else {
+          this.error = 'No hay usuario autenticado';
+          this.loading = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error en la autenticación:', error);
+        this.error = 'Error al verificar la autenticación';
+        this.loading = false;
+      }
     });
   }
 
-  async aceptarTarea(tarea: Tarea) {
-    const user = await this.authService.getCurrentUser();
-    if (user) {
-      await this.firestoreService.tomarTarea(tarea.id!, user);
-    }
+  ngOnDestroy() {
+    this.authSubscription?.unsubscribe();
+    this.tareasSubscription?.unsubscribe();
   }
 
-  async completarTarea(tarea: Tarea) {
-    if (tarea.id) {
-      await this.firestoreService.actualizarEstadoTarea(tarea.id, 'completada');
+  private cargarTareas() {
+    if (!this.currentUser) return;
+
+    if (this.tareasSubscription) {
+      this.tareasSubscription.unsubscribe();
+    }
+
+    this.tareasSubscription = this.firestoreService.getTareasPorTrabajador(this.currentUser.uid)
+      .subscribe({
+        next: (tareas) => {
+          this.tareas = tareas;
+          this.error = null;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar tareas:', error);
+          this.error = 'Error al cargar las tareas';
+          this.loading = false;
+        }
+      });
+  }
+
+  async logout() {
+    try {
+      this.loading = true;
+      await this.authService.logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      this.error = 'Error al cerrar sesión';
+    } finally {
+      this.loading = false;
     }
   }
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../firebase/auth.service';
-import { FirestoreService } from '../../firebase/firestore.service';
+import { FirestoreService, UserData } from '../../firebase/firestore.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,26 +13,49 @@ export class RegistrarsePage {
   email: string = '';
   password: string = '';
   rol: 'jefe' | 'trabajador' = 'trabajador';
+  error: string = '';
+  loading: boolean = false;
 
   constructor(
     private authService: AuthService,
-    private firestoreService: FirestoreService,
-    private router: Router
+    private router: Router,
+    private firestoreService: FirestoreService  // Añadido FirestoreService
   ) {}
 
   async onSubmit() {
+    if (!this.username || !this.email || !this.password) {
+      this.error = 'Por favor complete todos los campos';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
     try {
-      const result = await this.authService.register(this.email, this.password, this.username);
+      // Crear el usuario en Firebase Auth
+      const result = await this.authService.register(
+        this.email,
+        this.password,
+        this.username
+      );
+
       if (result.user) {
-        await this.firestoreService.saveUserData(result.user.uid, {
+        // Crear/actualizar el documento del usuario en Firestore con el rol seleccionado
+        const userData: UserData = {
           username: this.username,
           email: this.email,
-          rol: this.rol
-        });
+          uid: result.user.uid,
+          rol: this.rol  // Usar el rol seleccionado en el formulario
+        };
+
+        await this.firestoreService.saveUserData(result.user.uid, userData);
         await this.router.navigate(['/inicio-de-sesion']);
       }
-    } catch (error) {
-      console.error('Error al registrar:', error);
+    } catch (error: any) {
+      console.error('Error en registro:', error);
+      this.error = error.message || 'Error en el registro';
+    } finally {
+      this.loading = false;
     }
   }
 
