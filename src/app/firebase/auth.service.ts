@@ -11,6 +11,10 @@ export class AuthService {
     private router: Router
   ) {}
 
+  async getCurrentUser() {
+    return await this.auth.currentUser;
+  }
+
   async register(email: string, password: string, username: string) {
     try {
       const result = await this.auth.createUserWithEmailAndPassword(email, password);

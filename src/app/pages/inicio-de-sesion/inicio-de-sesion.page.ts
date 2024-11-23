@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../firebase/auth.service';
+import { FirestoreService } from '../../firebase/firestore.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,13 +14,25 @@ export class InicioDeSesionPage {
 
   constructor(
     private authService: AuthService,
+    private firestoreService: FirestoreService,
     private router: Router
   ) {}
 
   async onSubmit() {
     try {
-      await this.authService.login(this.email, this.password);
-      await this.router.navigate(['/inicio-de-sesion']);
+      const userCredential = await this.authService.login(this.email, this.password);
+
+      if (userCredential.user) {
+        const userData = await this.firestoreService.getUserData(userCredential.user.uid);
+
+        if (userData.rol === 'jefe') {
+          this.router.navigate(['/jefe']);
+        } else if (userData.rol === 'trabajador') {
+          this.router.navigate(['/trabajador']);
+        } else {
+          console.error('Usuario sin rol definido');
+        }
+      }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
     }

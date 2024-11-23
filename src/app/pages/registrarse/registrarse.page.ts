@@ -12,6 +12,7 @@ export class RegistrarsePage {
   username: string = '';
   email: string = '';
   password: string = '';
+  rol: 'jefe' | 'trabajador' = 'trabajador';
 
   constructor(
     private authService: AuthService,
@@ -25,7 +26,8 @@ export class RegistrarsePage {
       if (result.user) {
         await this.firestoreService.saveUserData(result.user.uid, {
           username: this.username,
-          email: this.email
+          email: this.email,
+          rol: this.rol
         });
         await this.router.navigate(['/inicio-de-sesion']);
       }

@@ -1,0 +1,22 @@
+<app-header [titulo]="'Panel de Trabajador'"></app-header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let tarea of tareas">
+      <ion-label>
+        <h2>{{tarea.titulo}}</h2>
+        <p>{{tarea.descripcion}}</p>
+        <p>Estado: {{tarea.estado}}</p>
+        <ion-button
+          *ngIf="tarea.estado === 'pendiente'"
+          (click)="tomarTarea(tarea)"
+        >
+          Tomar Tarea
+        </ion-button>
+        <p *ngIf="tarea.nombre_trabajador">
+          Tomada por: {{tarea.nombre_trabajador}}
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<app-footer></app-footer>

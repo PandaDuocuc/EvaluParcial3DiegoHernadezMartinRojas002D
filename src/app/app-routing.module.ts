@@ -19,6 +19,18 @@ const routes: Routes = [
     path: 'cierre-de-sesion',
     loadChildren: () => import('./pages/cierre-de-sesion/cierre-de-sesion.module').then( m => m.CierreDeSesionPageModule)
   },
+  {
+    path: 'jefe',
+    loadChildren: () => import('./pages/jefe/jefe.module').then( m => m.JefePageModule)
+  },
+  {
+    path: 'trabajador',
+    loadChildren: () => import('./pages/trabajador/trabajador.module').then( m => m.TrabajadorPageModule)
+  },
+  {
+    path: 'crear-tarea',
+    loadChildren: () => import('./pages/crear-tarea/crear-tarea.module').then( m => m.CrearTareaPageModule)
+  },
 ];
 
 @NgModule({

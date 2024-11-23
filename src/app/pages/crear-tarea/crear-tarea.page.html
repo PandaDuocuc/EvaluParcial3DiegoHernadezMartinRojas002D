@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear Nueva Tarea</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label position="floating">Título de la Tarea</ion-label>
+      <ion-input [(ngModel)]="titulo" type="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Descripción</ion-label>
+      <ion-input [(ngModel)]="descripcion" type="text"></ion-input>
+    </ion-item>
+    <ion-button expand="block" (click)="crearTarea()">Crear Tarea</ion-button>
+  </ion-list>
+</ion-content>
