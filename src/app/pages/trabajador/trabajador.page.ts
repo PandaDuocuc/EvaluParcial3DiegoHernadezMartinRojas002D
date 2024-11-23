@@ -3,6 +3,7 @@ import { AuthService } from '../../firebase/auth.service';
 import { FirestoreService, Tarea } from '../../firebase/firestore.service';
 import { Subscription } from 'rxjs';
 import firebase from 'firebase/compat/app';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-trabajador',
@@ -12,15 +13,20 @@ import firebase from 'firebase/compat/app';
 export class TrabajadorPage implements OnInit, OnDestroy {
   currentUser: firebase.User | null = null;
   tareas: Tarea[] = [];
+  tareasDisponibles: Tarea[] = [];
   loading: boolean = true;
   error: string | null = null;
   titulo: string = 'Panel de Trabajador';
+  selectedSegment: string = 'misTareas';
+
   private authSubscription?: Subscription;
   private tareasSubscription?: Subscription;
+  private tareasDisponiblesSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -30,6 +36,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
         this.currentUser = user;
         if (user) {
           this.cargarTareas();
+          this.cargarTareasDisponibles();
         } else {
           this.error = 'No hay usuario autenticado';
           this.loading = false;
@@ -46,6 +53,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.authSubscription?.unsubscribe();
     this.tareasSubscription?.unsubscribe();
+    this.tareasDisponiblesSubscription?.unsubscribe();
   }
 
   private cargarTareas() {
@@ -70,6 +78,82 @@ export class TrabajadorPage implements OnInit, OnDestroy {
       });
   }
 
+  private cargarTareasDisponibles() {
+    if (this.tareasDisponiblesSubscription) {
+      this.tareasDisponiblesSubscription.unsubscribe();
+    }
+
+    this.tareasDisponiblesSubscription = this.firestoreService.getTareasDisponibles()
+      .subscribe({
+        next: (tareas) => {
+          this.tareasDisponibles = tareas;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error al cargar tareas disponibles:', error);
+          this.loading = false;
+        }
+      });
+  }
+
+  async tomarTarea(tarea: Tarea) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Deseas tomar esta tarea?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Aceptar',
+          handler: async () => {
+            try {
+              this.loading = true;
+              await this.firestoreService.tomarTarea(tarea.id!, this.currentUser);
+              this.loading = false;
+            } catch (error) {
+              console.error('Error al tomar la tarea:', error);
+              this.error = 'Error al tomar la tarea';
+              this.loading = false;
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async completarTarea(tarea: Tarea) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar',
+      message: '¿Has completado esta tarea?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirmar',
+          handler: async () => {
+            try {
+              this.loading = true;
+              await this.firestoreService.completarTarea(tarea.id!);
+              this.loading = false;
+            } catch (error) {
+              console.error('Error al completar la tarea:', error);
+              this.error = 'Error al completar la tarea';
+              this.loading = false;
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   async logout() {
     try {
       this.loading = true;
@@ -80,5 +164,9 @@ export class TrabajadorPage implements OnInit, OnDestroy {
     } finally {
       this.loading = false;
     }
+  }
+
+  segmentChanged(event: any) {
+    this.selectedSegment = event.detail.value;
   }
 }

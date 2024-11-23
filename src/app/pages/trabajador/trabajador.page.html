@@ -1,16 +1,55 @@
 <app-header [titulo]="titulo"></app-header>
 
 <ion-content>
-  <ion-list *ngIf="!loading && !error">
-    <ion-item *ngFor="let tarea of tareas">
-      <ion-label>
-        <h2>{{ tarea.titulo }}</h2>
-        <p>{{ tarea.descripcion }}</p>
-        <p>Estado: {{ tarea.estado }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
+  <ion-segment mode="ios" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="misTareas" checked>
+      <ion-label>Mis Tareas</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="disponibles">
+      <ion-label>Tareas Disponibles</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Mis Tareas -->
+  <div *ngIf="selectedSegment === 'misTareas'">
+    <ion-list *ngIf="!loading && !error">
+      <ion-item *ngFor="let tarea of tareas">
+        <ion-label>
+          <h2>{{ tarea.titulo }}</h2>
+          <p>{{ tarea.descripcion }}</p>
+          <p>Estado: {{ tarea.estado }}</p>
+        </ion-label>
+        <ion-button slot="end" color="success" (click)="completarTarea(tarea)"
+                  *ngIf="tarea.estado === 'en_progreso'">
+          Completar
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="tareas.length === 0">
+        <ion-label>No tienes tareas asignadas</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Tareas Disponibles -->
+  <div *ngIf="selectedSegment === 'disponibles'">
+    <ion-list *ngIf="!loading && !error">
+      <ion-item *ngFor="let tarea of tareasDisponibles">
+        <ion-label>
+          <h2>{{ tarea.titulo }}</h2>
+          <p>{{ tarea.descripcion }}</p>
+        </ion-label>
+        <ion-button slot="end" color="primary" (click)="tomarTarea(tarea)">
+          Tomar Tarea
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="tareasDisponibles.length === 0">
+        <ion-label>No hay tareas disponibles</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
 
   <ion-spinner *ngIf="loading"></ion-spinner>
   <ion-text color="danger" *ngIf="error">{{ error }}</ion-text>
 </ion-content>
+
+<app-footer></app-footer>
