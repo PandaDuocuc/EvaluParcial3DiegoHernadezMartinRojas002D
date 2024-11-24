@@ -15,7 +15,7 @@ export interface Tarea {
   descripcion: string;
   asignado_a: string;
   creado_por: string;
-  estado: 'pendiente' | 'completada' | 'en_progreso';
+  estado: 'pendiente' | 'en progreso' | 'completada';
   fecha_creacion: Date;
   nombre_trabajador?: string;
 }
@@ -95,7 +95,7 @@ export class FirestoreService {
     try {
       console.log('Tomando tarea:', tareaId, 'por usuario:', user.uid);
       return await this.firestore.collection('tareas').doc(tareaId).update({
-        estado: 'en_progreso',
+        estado: 'en progreso',
         asignado_a: user.uid,
         nombre_trabajador: user.displayName
       });
@@ -117,7 +117,7 @@ export class FirestoreService {
     }
   }
 
-  async actualizarEstadoTarea(tareaId: string, estado: 'pendiente' | 'completada' | 'en_progreso') {
+  async actualizarEstadoTarea(tareaId: string, estado: 'pendiente' | 'completada' | 'en progreso') {
     try {
       console.log('Actualizando estado de tarea:', tareaId, 'a:', estado);
       return await this.firestore.collection('tareas').doc(tareaId).update({ estado });

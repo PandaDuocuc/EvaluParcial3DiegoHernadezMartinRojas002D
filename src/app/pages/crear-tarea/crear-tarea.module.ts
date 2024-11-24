@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CrearTareaPageRoutingModule } from './crear-tarea-routing.module';
 
 import { CrearTareaPage } from './crear-tarea.page';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CrearTareaPageRoutingModule
+    CrearTareaPageRoutingModule,
+    SharedModule
   ],
   declarations: [CrearTareaPage]
 })

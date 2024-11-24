@@ -57,8 +57,4 @@ export class JefePage implements OnInit {
 
     return await modal.present();
   }
-
-  logout() {
-    this.authService.logout();
-  }
 }

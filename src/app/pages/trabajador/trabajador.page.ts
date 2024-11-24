@@ -154,18 +154,6 @@ export class TrabajadorPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async logout() {
-    try {
-      this.loading = true;
-      await this.authService.logout();
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      this.error = 'Error al cerrar sesión';
-    } finally {
-      this.loading = false;
-    }
-  }
-
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
   }
