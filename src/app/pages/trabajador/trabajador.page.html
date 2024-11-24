@@ -17,7 +17,11 @@
         <ion-label>
           <h2>{{ tarea.titulo }}</h2>
           <p>{{ tarea.descripcion }}</p>
-          <p>Estado: {{ tarea.estado }}</p>
+          <p>Estado: <span [ngClass]="{
+            'estado-pendiente': tarea.estado === 'pendiente',
+            'estado-en-progreso': tarea.estado === 'en progreso',
+            'estado-completada': tarea.estado === 'completada'
+          }">{{ tarea.estado }}</span></p>
         </ion-label>
         <ion-button slot="end" color="success" (click)="completarTarea(tarea)"
                   *ngIf="tarea.estado === 'en progreso'">

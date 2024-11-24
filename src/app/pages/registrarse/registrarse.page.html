@@ -1,43 +1,42 @@
 <app-header></app-header>
+
 <ion-content>
-  <div class="ion-padding">
-    <div class="ion-text-center ion-padding">
-      <form (ngSubmit)="onSubmit()" class="auth-form">
-        <ion-item>
-          <ion-label position="floating">Nombre de Usuario</ion-label>
-          <ion-input type="text" [(ngModel)]="username" name="username" required></ion-input>
-        </ion-item>
+  <div class="form-wrapper">
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+      <ion-item>
+        <ion-label position="floating">Nombre de Usuario</ion-label>
+        <ion-input type="text" [(ngModel)]="username" name="username" required></ion-input>
+      </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Correo Electrónico</ion-label>
-          <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
-        </ion-item>
+      <ion-item>
+        <ion-label position="floating">Correo Electrónico</ion-label>
+        <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+      </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Contraseña</ion-label>
-          <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
-        </ion-item>
+      <ion-item>
+        <ion-label position="floating">Contraseña</ion-label>
+        <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+      </ion-item>
 
-        <ion-item>
-          <ion-label>Rol</ion-label>
-          <ion-select [(ngModel)]="rol" name="rol" required>
-            <ion-select-option value="jefe">Jefe</ion-select-option>
-            <ion-select-option value="trabajador">Trabajador</ion-select-option>
-          </ion-select>
-        </ion-item>
+      <ion-item>
+        <ion-label>Rol</ion-label>
+        <ion-select [(ngModel)]="rol" name="rol" required>
+          <ion-select-option value="jefe">Jefe</ion-select-option>
+          <ion-select-option value="trabajador">Trabajador</ion-select-option>
+        </ion-select>
+      </ion-item>
 
-        <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="loading">
-          {{ loading ? 'Registrando...' : 'Registrarse' }}
-        </ion-button>
+      <ion-button type="submit" expand="block" class="ion-margin-top" [disabled]="loading">
+        {{ loading ? 'Registrando...' : 'Registrarse' }}
+      </ion-button>
 
-        <ion-button expand="block" fill="clear" (click)="irALogin()" class="ion-margin-top">
-          ¿Ya tienes cuenta? Inicia sesión
-        </ion-button>
+      <ion-button expand="block" fill="clear" (click)="irALogin()" class="ion-margin-top">
+        ¿Ya tienes cuenta? Inicia sesión
+      </ion-button>
 
-        <ion-text color="danger" *ngIf="error">
-          <p>{{ error }}</p>
-        </ion-text>
-      </form>
-    </div>
+      <ion-text color="danger" *ngIf="error">
+        <p>{{ error }}</p>
+      </ion-text>
+    </form>
   </div>
 </ion-content>
