@@ -11,26 +11,31 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./trabajador.page.scss'],
 })
 export class TrabajadorPage implements OnInit, OnDestroy {
-  currentUser: firebase.User | null = null;
-  tareas: Tarea[] = [];
-  tareasDisponibles: Tarea[] = [];
-  loading: boolean = true;
-  error: string | null = null;
-  titulo: string = 'Panel de Trabajador';
-  selectedSegment: string = 'misTareas';
+  // Propiedades del componente
+  currentUser: firebase.User | null = null; // Usuario actual
+  tareas: Tarea[] = []; // Tareas asignadas al trabajador
+  tareasDisponibles: Tarea[] = []; // Tareas que puede tomar
+  loading: boolean = true; // Estado de carga
+  error: string | null = null; // Mensajes de error
+  titulo: string = 'Panel de Trabajador'; // Título de la página
+  selectedSegment: string = 'misTareas'; // Segmento seleccionado en la UI
 
+  // Suscripciones para manejar la limpieza de memoria
   private authSubscription?: Subscription;
   private tareasSubscription?: Subscription;
   private tareasDisponiblesSubscription?: Subscription;
 
+  // Constructor con inyección de dependencias
   constructor(
     private authService: AuthService,
     private firestoreService: FirestoreService,
     private alertController: AlertController
   ) {}
 
+  // Inicialización del componente
   ngOnInit() {
     this.loading = true;
+    // Suscripción al estado de autenticación
     this.authSubscription = this.authService.authState$.subscribe({
       next: (user) => {
         this.currentUser = user;
@@ -50,12 +55,15 @@ export class TrabajadorPage implements OnInit, OnDestroy {
     });
   }
 
+  // Limpieza al destruir el componente
   ngOnDestroy() {
+    // Cancelar todas las suscripciones
     this.authSubscription?.unsubscribe();
     this.tareasSubscription?.unsubscribe();
     this.tareasDisponiblesSubscription?.unsubscribe();
   }
 
+  // Carga las tareas asignadas al trabajador
   private cargarTareas() {
     if (!this.currentUser) return;
 
@@ -78,6 +86,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
       });
   }
 
+  // Carga las tareas disponibles para tomar
   private cargarTareasDisponibles() {
     if (this.tareasDisponiblesSubscription) {
       this.tareasDisponiblesSubscription.unsubscribe();
@@ -96,6 +105,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
       });
   }
 
+  // Método para que el trabajador tome una tarea
   async tomarTarea(tarea: Tarea) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -125,6 +135,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  // Método para marcar una tarea como completada
   async completarTarea(tarea: Tarea) {
     const alert = await this.alertController.create({
       header: 'Confirmar',
@@ -154,6 +165,7 @@ export class TrabajadorPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  // Maneja el cambio de segmento en la UI
   segmentChanged(event: any) {
     this.selectedSegment = event.detail.value;
   }

@@ -6,5 +6,6 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  @Input() titulo: string = 'Mi Aplicación';
+  // Decorador Input permite que los componentes padres pasen el título
+  @Input() titulo: string = 'TareAPP';
 }

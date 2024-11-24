@@ -13,6 +13,9 @@ export class CierreDeSesionPage implements OnInit {
     private router: Router
   ) {}
 
+  /**
+   * Al iniciar el componente, espera 2 segundos y cierra la sesión
+   */
   ngOnInit() {
     setTimeout(async () => {
       try {

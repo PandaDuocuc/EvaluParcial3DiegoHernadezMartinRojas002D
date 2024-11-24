@@ -9,8 +9,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./inicio-de-sesion.page.scss'],
 })
 export class InicioDeSesionPage {
+  /** Email ingresado por el usuario */
   email: string = '';
+  /** Contraseña ingresada por el usuario */
   password: string = '';
+  /** Controla la visibilidad del spinner de carga */
+  isLoading: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -18,13 +22,22 @@ export class InicioDeSesionPage {
     private router: Router
   ) {}
 
+  /**
+   * Maneja el envío del formulario de inicio de sesión
+   * Autentica al usuario y lo redirige según su rol
+   */
   async onSubmit() {
+    this.isLoading = true;
+
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos
       const userCredential = await this.authService.login(this.email, this.password);
 
       if (userCredential.user) {
         const userData = await this.firestoreService.getUserData(userCredential.user.uid);
 
+
+        // Redirigir según el rol del usuario
         if (userData.rol === 'jefe') {
           this.router.navigate(['/jefe']);
         } else if (userData.rol === 'trabajador') {
@@ -35,9 +48,14 @@ export class InicioDeSesionPage {
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
+  /**
+   * Navega a la página de registro
+   */
   irARegistro() {
     this.router.navigate(['/registrarse']);
   }

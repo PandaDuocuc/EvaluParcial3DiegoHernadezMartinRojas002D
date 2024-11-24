@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../firebase/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,10 +8,10 @@ import { Router } from '@angular/router';
 })
 export class FooterComponent {
   constructor(
-    private authService: AuthService,
     private router: Router
   ) {}
 
+  // Navega a cierre-de-sesion para cerrar sesión
   async logout() {
     try {
       await this.router.navigate(['/cierre-de-sesion']);

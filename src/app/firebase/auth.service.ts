@@ -10,6 +10,9 @@ import firebase from 'firebase/compat/app';
   providedIn: 'root'
 })
 export class AuthService {
+  /**
+   * Observable que emite el estado de autenticación actual del usuario
+   */
   authState$: Observable<firebase.User | null>;
 
   constructor(
@@ -24,10 +27,21 @@ export class AuthService {
     );
   }
 
+  /**
+   * Obtiene el usuario actualmente autenticado
+   * @returns Promesa con el usuario actual o null si no hay sesión
+   */
   getCurrentUser(): Promise<firebase.User | null> {
     return this.auth.currentUser;
   }
 
+  /**
+   * Registra un nuevo usuario en Firebase Auth
+   * @param email Correo electrónico del usuario
+   * @param password Contraseña del usuario
+   * @param username Nombre de usuario
+   * @returns Promesa con las credenciales del usuario creado
+   */
   async register(email: string, password: string, username: string): Promise<firebase.auth.UserCredential> {
     try {
       console.log('Iniciando registro de usuario:', email);
@@ -46,6 +60,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Inicia sesión con email y contraseña
+   * @param email Correo electrónico del usuario
+   * @param password Contraseña del usuario
+   * @returns Promesa con las credenciales del usuario autenticado
+   */
   async login(email: string, password: string): Promise<firebase.auth.UserCredential> {
     try {
       console.log('Iniciando login:', email);
@@ -58,6 +78,10 @@ export class AuthService {
     }
   }
 
+  /**
+   * Cierra la sesión del usuario actual
+   * @returns Promesa que se resuelve cuando se cierra la sesión
+   */
   async logout(): Promise<void> {
     try {
       await this.auth.signOut();
@@ -69,14 +93,20 @@ export class AuthService {
     }
   }
 
-  // Método auxiliar para verificar si hay un usuario autenticado
+  /**
+   * Verifica si hay un usuario autenticado
+   * @returns Observable que emite true si hay un usuario autenticado
+   */
   isAuthenticated(): Observable<boolean> {
     return this.authState$.pipe(
       map(user => user !== null)
     );
   }
 
-  // Método para obtener el rol del usuario actual
+  /**
+   * Obtiene el rol del usuario actual desde Firestore
+   * @returns Promesa con el rol del usuario o null si no existe
+   */
   async getCurrentUserRole(): Promise<string | null> {
     const user = await this.getCurrentUser();
     if (!user) return null;
@@ -90,7 +120,11 @@ export class AuthService {
     }
   }
 
-  // Método para manejar errores de autenticación
+  /**
+   * Maneja y formatea los errores de autenticación
+   * @param error Error recibido de Firebase Auth
+   * @returns Error formateado con mensaje amigable
+   */
   private handleAuthError(error: any): Error {
     let message = 'Error de autenticación';
 

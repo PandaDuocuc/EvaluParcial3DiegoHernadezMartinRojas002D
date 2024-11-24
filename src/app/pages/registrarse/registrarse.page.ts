@@ -9,12 +9,20 @@ import { Router } from '@angular/router';
   styleUrls: ['./registrarse.page.scss'],
 })
 export class RegistrarsePage {
+  /** Nombre de usuario */
   username: string = '';
+  /** Email del nuevo usuario */
   email: string = '';
+  /** Contraseña del nuevo usuario */
   password: string = '';
+  /** Rol seleccionado para el usuario */
   rol: 'jefe' | 'trabajador' = 'trabajador';
+  /** Mensaje de error si existe */
   error: string = '';
+  /** Controla el cambio de registrarse a registrando... */
   loading: boolean = false;
+  /** Controla la visibilidad del spinner de carga */
+  isLoading: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -28,10 +36,12 @@ export class RegistrarsePage {
       return;
     }
 
+    this.isLoading = true;
     this.loading = true;
     this.error = '';
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos
       // Crear el usuario en Firebase Auth
       const result = await this.authService.register(
         this.email,
@@ -56,9 +66,13 @@ export class RegistrarsePage {
       this.error = error.message || 'Error en el registro';
     } finally {
       this.loading = false;
+      this.isLoading = false;
     }
   }
 
+  /**
+   * Navega a la página de inicio de sesión
+   */
   irALogin() {
     this.router.navigate(['/inicio-de-sesion']);
   }
