@@ -15,6 +15,8 @@ export class InicioDeSesionPage {
   password: string = '';
   /** Controla la visibilidad del spinner de carga */
   isLoading: boolean = false;
+  /** Mensaje de error para mostrar */
+  error: string = '';
 
   constructor(
     private authService: AuthService,
@@ -27,7 +29,15 @@ export class InicioDeSesionPage {
    * Autentica al usuario y lo redirige según su rol
    */
   async onSubmit() {
+
+    // Validar campos requeridos
+    if (!this.email || !this.password) {
+      this.error = 'Por favor complete todos los campos';
+      return;
+    }
+
     this.isLoading = true;
+    this.error = ''; // Limpiar errores anteriores
 
     try {
       await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 segundos
@@ -46,8 +56,9 @@ export class InicioDeSesionPage {
           console.error('Usuario sin rol definido');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al iniciar sesión:', error);
+      this.error = error.message || 'Error al iniciar sesión';
     } finally {
       this.isLoading = false;
     }

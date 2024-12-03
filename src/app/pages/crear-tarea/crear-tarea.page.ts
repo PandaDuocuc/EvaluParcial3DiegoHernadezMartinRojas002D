@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-crear-tarea',
@@ -12,7 +12,10 @@ export class CrearTareaPage {
   /** Descripción de la nueva tarea */
   descripcion: string = '';
 
-  constructor(private modalController: ModalController) {}
+  constructor(
+    private modalController: ModalController,
+    private navController: NavController
+  ) {}
 
   /**
    * Crea una nueva tarea y cierra el modal
@@ -25,5 +28,16 @@ export class CrearTareaPage {
         descripcion: this.descripcion
       });
     }
+  }
+
+  /**
+   * Método para volver a la página de jefe
+   */
+  volverAJefe() {
+    this.modalController.dismiss(); // Asegurar el cierre del modal
+    this.navController.navigateRoot('/jefe', {
+      animated: true,
+      animationDirection: 'back'
+    });
   }
 }

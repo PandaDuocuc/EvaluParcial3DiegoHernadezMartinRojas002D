@@ -27,6 +27,11 @@
       <ion-button expand="block" fill="clear" (click)="irARegistro()" class="ion-margin-top">
         ¿No tienes cuenta? Regístrate
       </ion-button>
+
+      <!-- Mostrar mensaje de error -->
+      <ion-text color="danger" *ngIf="error" class="ion-padding-top">
+        <p>{{ error }}</p>
+      </ion-text>
     </form>
   </div>
 </ion-content>

@@ -78,15 +78,14 @@ export class AuthService {
     }
   }
 
-  /**
-   * Cierra la sesión del usuario actual
-   * @returns Promesa que se resuelve cuando se cierra la sesión
-   */
   async logout(): Promise<void> {
     try {
       await this.auth.signOut();
       console.log('Logout exitoso');
-      await this.router.navigate(['/inicio-de-sesion']);
+      // Usar setTimeout para asegurar que el cierre de sesión se complete
+      setTimeout(() => {
+        this.router.navigate(['/inicio-de-sesion']);
+      }, 100);
     } catch (error) {
       console.error('Error en logout:', error);
       throw this.handleAuthError(error);
@@ -140,7 +139,7 @@ export class AuthService {
           message = 'Operación no permitida';
           break;
         case 'auth/weak-password':
-          message = 'La contraseña es muy débil';
+          message = 'La contraseña debe tener mínimo 6 caracteres';
           break;
         case 'auth/user-disabled':
           message = 'Usuario deshabilitado';
@@ -150,6 +149,9 @@ export class AuthService {
           break;
         case 'auth/wrong-password':
           message = 'Contraseña incorrecta';
+          break;
+        case 'auth/invalid-credential':
+          message = 'Correo o contraseña incorrectos. Por favor, verifica tus credenciales.';
           break;
         default:
           message = error.message || 'Error desconocido';

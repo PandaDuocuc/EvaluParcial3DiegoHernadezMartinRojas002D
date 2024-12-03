@@ -6,10 +6,15 @@
       <ion-label position="floating">Título de la Tarea</ion-label>
       <ion-input [(ngModel)]="titulo" type="text"></ion-input>
     </ion-item>
+
     <ion-item>
       <ion-label position="floating">Descripción</ion-label>
       <ion-input [(ngModel)]="descripcion" type="text"></ion-input>
     </ion-item>
-    <ion-button expand="block" (click)="crearTarea()">Crear Tarea</ion-button>
+
+    <div class="ion-padding">
+      <ion-button expand="block" (click)="crearTarea()">Crear Tarea</ion-button>
+      <ion-button expand="block" fill="outline" (click)="volverAJefe()">Volver</ion-button>
+    </div>
   </ion-list>
 </ion-content>
