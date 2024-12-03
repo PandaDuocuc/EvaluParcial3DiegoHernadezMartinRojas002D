@@ -55,6 +55,10 @@ export class InicioDeSesionPage {
         } else {
           console.error('Usuario sin rol definido');
         }
+
+        // Limpiar el formulario después de un inicio de sesión exitoso
+        this.email = '';
+        this.password = '';
       }
     } catch (error: any) {
       console.error('Error al iniciar sesión:', error);
