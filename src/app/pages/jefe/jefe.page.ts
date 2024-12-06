@@ -5,6 +5,8 @@ import { ModalController } from '@ionic/angular';
 import { Tarea } from '../../firebase/firestore.service';
 import { CrearTareaPage } from '../crear-tarea/crear-tarea.page';
 import { Subscription } from 'rxjs';
+import { catchError, retryWhen, delay, take, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { Router } from '@angular/router';  // Añadido para navegación
 
 @Component({
@@ -12,12 +14,13 @@ import { Router } from '@angular/router';  // Añadido para navegación
   templateUrl: './jefe.page.html',
   styleUrls: ['./jefe.page.scss'],
 })
-export class JefePage implements OnInit {
+export class JefePage implements OnInit, OnDestroy {
   // Arreglo para almacenar las tareas
   tareas: Tarea[] = [];
 
   // Suscripción para manejar la carga de tareas
   private tareasSubscription: Subscription | null = null;
+  private reconnectAttempts = 0;
 
   // Constructor que inyecta los servicios necesarios
   constructor(
@@ -30,6 +33,15 @@ export class JefePage implements OnInit {
   // Método que se ejecuta al inicializar el componente
   async ngOnInit() {
     await this.cargarTareas(); // Usa await para asegurar la carga
+
+    // Escucha cambios de conectividad
+    this.setupConnectivityListener();
+  }
+
+  setupConnectivityListener() {
+    if ('onLine' in navigator) {
+      window.addEventListener('online', () => this.cargarTareas());
+    }
   }
 
   // Carga las tareas creadas por el jefe actual
@@ -37,25 +49,41 @@ export class JefePage implements OnInit {
     try {
       const user = await this.authService.getCurrentUser();
       if (user) {
-        // Cancela la suscripción previa si existe
-        if (this.tareasSubscription) {
-          this.tareasSubscription.unsubscribe();
-        }
+        // Cancela la suscripción previa
+        this.tareasSubscription?.unsubscribe();
 
-        // Agregamos más registro de depuración
-        console.log('Cargando tareas para usuario:', user.uid);
-
-        // Se suscribe a actualizaciones en tiempo real de las tareas
         this.tareasSubscription = this.firestoreService
           .getTareasPorJefe(user.uid)
+          .pipe(
+            // Añade reintento con backoff
+            retryWhen(errors =>
+              errors.pipe(
+                delay(1000),
+                take(3),
+                tap(() => this.reconnectAttempts++)
+              )
+            ),
+            catchError(error => {
+              console.error('Error al cargar tareas:', error);
+
+              // Recupera tareas en caché
+              const cachedTareas = localStorage.getItem(`tareas_${user.uid}`);
+              if (cachedTareas) {
+                this.tareas = JSON.parse(cachedTareas);
+              }
+
+              return of([]);
+            })
+          )
           .subscribe({
             next: (tareas) => {
               this.tareas = tareas;
-              console.log('Tareas cargadas:', tareas);
-              console.log('Número de tareas:', tareas.length);
+              // Guarda en caché local
+              localStorage.setItem(`tareas_${user.uid}`, JSON.stringify(tareas));
+              this.reconnectAttempts = 0;
             },
             error: (error) => {
-              console.error('Error al cargar tareas:', error);
+              console.error('Error en suscripción de tareas:', error);
             }
           });
       }
@@ -109,8 +137,12 @@ export class JefePage implements OnInit {
 
   // Implementa OnDestroy para limpiar suscripciones
   ngOnDestroy() {
-    if (this.tareasSubscription) {
-      this.tareasSubscription.unsubscribe();
+    // Limpia la suscripción
+    this.tareasSubscription?.unsubscribe();
+
+    // Elimina el listener de conectividad
+    if ('onLine' in navigator) {
+      window.removeEventListener('online', () => this.cargarTareas());
     }
   }
 }

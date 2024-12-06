@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   {
@@ -21,11 +22,15 @@ const routes: Routes = [
   },
   {
     path: 'jefe',
-    loadChildren: () => import('./pages/jefe/jefe.module').then( m => m.JefePageModule)
+    loadChildren: () => import('./pages/jefe/jefe.module').then( m => m.JefePageModule),
+    canActivate: [AuthGuard],
+    data: { expectdRole: "jefe" } // Especifica rol esperado
   },
   {
     path: 'trabajador',
-    loadChildren: () => import('./pages/trabajador/trabajador.module').then( m => m.TrabajadorPageModule)
+    loadChildren: () => import('./pages/trabajador/trabajador.module').then( m => m.TrabajadorPageModule),
+    canActivate: [AuthGuard],
+    data: { expectdRole: "trabajador" } // Especifica rol esperado
   },
   {
     path: 'crear-tarea',

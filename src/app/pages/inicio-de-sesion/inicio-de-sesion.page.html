@@ -8,16 +8,16 @@
     class="loading-spinner">
   </ion-spinner>
 
-  <div class="form-wrapper" [class.hidden]="isLoading">
+  <div class="form-wrapper" [class.hidden]="isLoading" autocomplete="off">
     <form (ngSubmit)="onSubmit()" class="auth-form">
       <ion-item>
         <ion-label position="floating">Correo Electrónico</ion-label>
-        <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+        <ion-input type="email" [(ngModel)]="email" name="email" id = "login-email" required></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label position="floating">Contraseña</ion-label>
-        <ion-input type="password" [(ngModel)]="password" name="password" required></ion-input>
+        <ion-input type="password" [(ngModel)]="password" name="password" id = "login-password" required></ion-input>
       </ion-item>
 
       <ion-button type="submit" expand="block" class="ion-margin-top">
